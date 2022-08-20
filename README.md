@@ -16,9 +16,10 @@ This repo is highly built on the official [CLIFF](https://github.com/huawei-noah
 ).
 
 ## Major features
-- **Better Object Detector**
-- **Multi-Object Tracker (NEW!)**
-
+- [x] Support YOLOX as single-person detector, better performance on single frame.
+- [x] Support ByteTrack as multi-person tracker, better performance on person Re-ID.
+- [x] Support linear interpolation as motion completion method, especially for occlusion.
+- [x] Support Smooth-Net as post-processing motion smooth for decresing motion jittering.
 
 ## Preparation
 ```bash
