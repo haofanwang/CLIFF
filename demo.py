@@ -164,6 +164,8 @@ def main(args):
         class_id = 0
         for i, img in enumerate(imgs):
             result = inference_detector(model, img)
+            if len(result[class_id]) == 0:
+                continue
             x1, y1, x2, y2, score = result[class_id][0]
             detection_all.append([i, x1, y1, x2, y2, score, 0.99, 0])
             
