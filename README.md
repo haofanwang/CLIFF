@@ -16,11 +16,11 @@ This repo is highly built on the official [CLIFF](https://github.com/huawei-noah
 ).
 
 ## Major features
-- [x] Support YOLOX as single-person detector, better performance on single frame.
-- [x] Support ByteTrack as multi-person tracker, better performance on person Re-ID.
-- [x] Support linear interpolation as motion completion method, especially for occlusion.
-- [x] Support Smooth-Net as post-processing motion smooth for decresing motion jittering.
-- [x] (NEW!) Support SMPLify fitting given GT/Pred 2D keypoints for improving the quality of estimated SMPL params.
+- [x] **[08/20/22]** Support YOLOX as single-person detector, better performance on single frame.
+- [x] **[08/20/22]** Support ByteTrack as multi-person tracker, better performance on person Re-ID.
+- [x] **[08/20/22]** Support linear interpolation as motion completion method, especially for occlusion.
+- [x] **[08/20/22]** Support Smooth-Net as post-processing motion smooth for decresing motion jittering.
+- [x] **[09/29/22]** Support SMPLify fitting given GT/Pred 2D keypoints for improving the quality of estimated SMPL params.
 
 ## Preparation
 ```bash
