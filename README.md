@@ -20,6 +20,7 @@ This repo is highly built on the official [CLIFF](https://github.com/huawei-noah
 - [x] Support ByteTrack as multi-person tracker, better performance on person Re-ID.
 - [x] Support linear interpolation as motion completion method, especially for occlusion.
 - [x] Support Smooth-Net as post-processing motion smooth for decresing motion jittering.
+- [x] (NEW!) Support SMPLify fitting given GT/Pred 2D keypoints for improving the quality of estimated SMPL params.
 
 ## Preparation
 ```bash
@@ -83,6 +84,14 @@ python demo.py --ckpt data/ckpt/hr48-PA43.0_MJE69.0_MVE81.2_3dpw.pt \
                --frame_rate 30
 ```
 
+## SMPLify Fitting
+
+As the same as [SPIN](https://github.com/nkolot/SPIN), we apply SMPLify fitting after CLIFF, OpenPose format 2D Keypoints are required for convinence.
+
+```
+python3 demo_fit.py --img=examples/im1010.jpg \ 
+                    --openpose=examples/im1010_openpose.json
+```
 
 ## Citing
 ```
