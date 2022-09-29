@@ -20,21 +20,25 @@ import os.path as osp
 import cv2
 import copy
 import glob
-import torch
 import argparse
 import numpy as np
 from tqdm import tqdm
-import smplx
-from torch.utils.data import DataLoader
-import torchgeometry as tgm
 
+import torch
+import torchgeometry as tgm
+from torch.utils.data import DataLoader
+
+import smplx
+
+from models.smpl import SMPL
 from models.cliff_hr48.cliff import CLIFF as cliff_hr48
 from models.cliff_res50.cliff import CLIFF as cliff_res50
+
 from common import constants
-from common.utils import strip_prefix_if_present, cam_crop2full, video_to_images
-from common.utils import estimate_focal_length
 from common.renderer_pyrd import Renderer
 from common.mocap_dataset import MocapDataset
+from common.utils import estimate_focal_length
+from common.utils import strip_prefix_if_present, cam_crop2full, video_to_images
 
 import mmcv
 from mmtrack.apis import inference_mot, init_model
@@ -63,7 +67,7 @@ def perspective_projection(points, rotation, translation, focal_length,
     # Transform points
     points = torch.einsum('bij,bkj->bki', rotation, points)
 
-    # MODIFICATION: the line shoule be commented out as the points have been aligned
+    # ATTENTION: the line shoule be commented out as the points have been aligned
     # points = points + translation.unsqueeze(1)
 
     # Apply perspective distortion
@@ -217,7 +221,7 @@ def main(args):
     cliff_model.eval()
 
     # Setup the SMPL model
-    smpl_model = smplx.create(constants.SMPL_MODEL_DIR, "smpl").to(device)
+    smpl_model = SMPL(constants.SMPL_MODEL_DIR).to(device)
 
     pred_vert_arr = []
     if args.save_results:
@@ -257,7 +261,13 @@ def main(args):
         pred_vertices = pred_output.vertices
         pred_vert_arr.extend(pred_vertices.cpu().numpy())
         
-        # re-project to 2D keypoints on image plane
+        # re-project to 2D keypoints on image plane for calculating reprojection loss
+        '''
+        # visualize
+        for index, (px, py) in enumerate(pred_keypoints2d[0]):
+            cv2.circle(img, (int(px), int(py)), 1, [255, 128, 0], 2)
+        cv2.imwrite("front_view_kpt.jpg", img)
+        '''
         pred_keypoints3d = pred_output.joints[:,:24,:]
         camera_center = torch.hstack((img_w[:,None], img_h[:,None])) / 2
         pred_keypoints2d = perspective_projection(
@@ -268,6 +278,7 @@ def main(args):
                 camera_center=camera_center)
         
         if args.save_results:
+            # default pose_format is rotation matrix instead of axis-angle
             if args.pose_format == "aa":
                 rot_pad = torch.tensor([0, 0, 1], dtype=torch.float32, device=device).view(1, 3, 1)
                 rot_pad = rot_pad.expand(pred_rotmat.shape[0] * 24, -1, -1)
@@ -302,7 +313,6 @@ def main(args):
             choose_index = []
             choose_joints = []
             choose_vertices = []
-            choose_detection_all = []
             
             for i in range(len(detection_all)):
                 frame_id = detection_all[i][0]
