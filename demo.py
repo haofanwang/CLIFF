@@ -350,6 +350,62 @@ def main(args):
                 choose_joints = smooth_process(choose_joints, 
                                                smooth_type='smoothnet_windowsize8',
                                                cfg_base_dir='configs/_base_/post_processing/')
+                # it is also fine to smooth SMPL pose and translation, instead of joint directly
+                # refer to following code as reference, only SmoothNet has been tested.
+                '''
+                import copy
+                import numpy as np
+                from mmhuman3d.utils.demo_utils import smooth_process
+                
+                pose = smpl_pose # (N,72), "pose" in npz file
+                trans = smpl_trans # (N,3), "global_t" in npz file
+                
+                smooth_type = 'smoothnet_windowsize8'
+                
+                # start from 0, the interval is 2
+                p0 = pose[::2]
+                t0 = trans[::2]
+                frame_num = p0.shape[0]
+                print(frame_num)
+                new_pose_0 = smooth_process(p0.reshape(frame_num,24,3), 
+                                            smooth_type='smoothnet_windowsize8',
+                                            cfg_base_dir='configs/_base_/post_processing/').reshape(frame_num,72)
+
+                new_trans_0 = smooth_process(t0[:, np.newaxis], 
+                                             smooth_type='smoothnet_windowsize8',
+                                             cfg_base_dir='configs/_base_/post_processing/').reshape(frame_num,3)
+                
+                # start from 1, the interval is 2
+                p1 = pose[1::2]
+                t1 = trans[1::2]
+                frame_num = p1.shape[0]
+
+                new_pose_1 = smooth_process(p1.reshape(frame_num,24,3), 
+                                            smooth_type='smoothnet_windowsize8',
+                                            cfg_base_dir='configs/_base_/post_processing/').reshape(frame_num,72)
+
+                new_trans_1 = smooth_process(t1[:, np.newaxis], 
+                                             smooth_type='smoothnet_windowsize8',
+                                             cfg_base_dir='configs/_base_/post_processing/').reshape(frame_num,3)
+
+                new_pose = copy.copy(pose)
+                new_trans = copy.copy(trans)
+
+                new_pose[::2] = new_pose_0
+                new_pose[1::2] = new_pose_1
+
+                new_trans[::2] = new_trans_0
+                new_trans[1::2] = new_trans_1
+
+                np.savez('{}_smoothnet.npz'.format(name), 
+                         imgname=file['imgname'],
+                         pose=new_pose, 
+                         shape=file['shape'], 
+                         global_t=new_trans,
+                         pred_joints=file['pred_joints'], 
+                         focal_l=file['focal_l'],
+                         detection_all=file['detection_all'])
+                '''
             
             infill_frame_ids = []
             for infill_frame_id in range(int(min(choose_frame)), int(max(choose_frame))):
