@@ -21,6 +21,7 @@ This repo is highly built on the official [CLIFF](https://github.com/huawei-noah
 - [x] **[08/20/22]** Support linear interpolation as motion completion method, especially for occlusion.
 - [x] **[08/20/22]** Support Smooth-Net as post-processing motion smooth for decresing motion jittering.
 - [x] **[09/29/22]** Support SMPLify fitting given GT/Pred 2D keypoints for improving the quality of estimated SMPL params.
+- [x] **[01/31/23]** Further support motion smooth for SMPL pose and translation besides of 3D joints.
 
 ## Preparation
 ```bash
@@ -102,3 +103,6 @@ python3 demo_fit.py --img=examples/im1010.jpg \
   Year      = {2022}
 }
 ```
+
+## Contact
+If you have problems about usage, feel free to open an issue or directly contact me via: haofanwang.ai@gmail.com. But please note that I'm NOT the author of CLIFF, so for any question about the paper, contact the author.
